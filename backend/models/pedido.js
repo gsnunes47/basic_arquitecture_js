@@ -2,8 +2,7 @@ import mongoose from "mongoose";
 
 const clienteSchema = new mongoose.Schema({
     nome: { type: String, required: true },
-    numero: { type: String, required: true },
-    endereco: { type: String, required: true }
+    numero: { type: String, required: true }
 })
 
 const itemSchema = new mongoose.Schema({
@@ -12,7 +11,7 @@ const itemSchema = new mongoose.Schema({
 })
 
 const pedidoSchema = new mongoose.Schema({
-    cliente: { clienteSchema },
+    cliente: clienteSchema,
     items: [ itemSchema ],
     endereco: { type: String, required: true }
 })

@@ -1,9 +1,10 @@
 import express from "express";
-import connectDB from database;
-import Pedido from "./models/Pedido.js";
+import connectDB from "./database/database.js";
+import Pedido from "./models/pedido.js";
 
 const app = express()
 const port = 3000
+app.use(express.json())
 
 connectDB();
 
