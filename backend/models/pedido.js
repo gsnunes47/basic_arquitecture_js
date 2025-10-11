@@ -13,7 +13,8 @@ const itemSchema = new mongoose.Schema({
 const pedidoSchema = new mongoose.Schema({
     cliente: clienteSchema,
     items: [ itemSchema ],
-    endereco: { type: String, required: true }
+    endereco: { type: String, required: true },
+    estado: { type: Boolean, default: false }
 })
 
 export default mongoose.model("Pedido", pedidoSchema);

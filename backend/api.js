@@ -19,6 +19,39 @@ app.post('/pedido', async (req, res) => {
   }
 })
 
+app.get("/pedidos", async (req, res) => {
+  try {
+    const pedidos = await Pedido.find()
+    res.json(pedidos)
+  } catch (error) {
+    res.json({ error: error })
+  }
+})
+
+app.put("/pedido/:id", async (req, res) => {
+  try {
+    const pedidoAtualizado = await Pedido.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json(pedidoAtualizado)
+  } catch (error) {
+    res.json({ error: error })
+  }
+})
+
+app.delete("/pedido/:id", async (req, res) => {
+  try {
+    const pedidoExcluido = await Pedido.findByIdAndDelete(
+      req.params.id
+    );
+    res.json(pedidoExcluido)
+  } catch (error) {
+    res.json({ error: error })
+  }
+})
+
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })

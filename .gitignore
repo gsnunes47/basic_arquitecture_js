@@ -1,6 +1,4 @@
 node_modules
 .env
 gabarito/
-
-git rm --cached gabarito
-git commit --amend --no-edit
+gaba.js
