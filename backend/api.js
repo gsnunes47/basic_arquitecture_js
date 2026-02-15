@@ -1,64 +1,126 @@
 import express from "express";
 import cors from "cors";
-import connectDB from "./database/database.js";
-import Pedido from "./models/pedido.js";
 
-const app = express()
-const port = 3000
+const app = express();
+const port = 3000;
 
-app.use(express.json())
-app.use(cors())
-connectDB();
-// rotas / funções
+app.use(express.json());
+app.use(cors());
 
-app.post('/pedido', async (req, res) => {
-  try {
-    const novoPedido = await Pedido.create(req.body);
-    res.json(novoPedido)
-  } catch (error) {
-    res.json({ error: error })
+// 🔥 Banco fake em memória
+let pedidos = [
+  {
+    id: 1,
+    nome: "Gustavo",
+    produto: "Notebook",
+    quantidade: 1,
+    status: "pendente"
+  },
+  {
+    id: 2,
+    nome: "Maria",
+    produto: "Mouse",
+    quantidade: 2,
+    status: "enviado"
+  },
+  {
+    id: 3,
+    nome: "João",
+    produto: "Teclado",
+    quantidade: 1,
+    status: "cancelado"
   }
-})
+];
 
+let currentId = 4;
+
+
+// -------------------
+// POST - Criar pedido
+// -------------------
+app.post("/pedido", async (req, res) => {
+  try {
+    if (!req.body || !req.body.nome) {
+      return res.status(400).json({ error: "Nome é obrigatório" });
+    }
+
+    const novoPedido = {
+      id: currentId++,
+      ...req.body
+    };
+
+    pedidos.push(novoPedido);
+
+    res.status(201).json(novoPedido);
+  } catch (error) {
+    res.status(500).json({ error: "Erro interno" });
+  }
+});
+
+// -------------------
+// GET - Listar pedidos
+// -------------------
 app.get("/pedidos", async (req, res) => {
   try {
-    const pedidos = await Pedido.find()
-    res.json(pedidos)
+    res.json(pedidos);
   } catch (error) {
-    res.json({ error: error })
+    res.status(500).json({ error: "Erro interno" });
   }
-})
+});
 
+// -------------------
+// PUT - Atualizar pedido
+// -------------------
 app.put("/pedido/:id", async (req, res) => {
   try {
-    const pedidoAtualizado = await Pedido.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    res.json(pedidoAtualizado)
-  } catch (error) {
-    res.json({ error: error })
-  }
-})
+    const id = Number(req.params.id);
 
+    const index = pedidos.findIndex(p => p.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ error: "Pedido não encontrado" });
+    }
+
+    pedidos[index] = {
+      ...pedidos[index],
+      ...req.body
+    };
+
+    res.json(pedidos[index]);
+
+  } catch (error) {
+    res.status(500).json({ error: "Erro interno" });
+  }
+});
+
+// -------------------
+// DELETE - Remover pedido
+// -------------------
 app.delete("/pedido/:id", async (req, res) => {
   try {
-    const pedidoExcluido = await Pedido.findByIdAndDelete(
-      req.params.id
-    );
-    res.json(pedidoExcluido)
+    const id = Number(req.params.id);
+
+    const pedidoExiste = pedidos.some(p => p.id === id);
+
+    if (!pedidoExiste) {
+      return res.status(404).json({ error: "Pedido não encontrado" });
+    }
+
+    pedidos = pedidos.filter(p => p.id !== id);
+
+    res.status(204).send();
+
   } catch (error) {
-    res.json({ error: error })
+    res.status(500).json({ error: "Erro interno" });
   }
-})
+});
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+// -------------------
+app.get("/", (req, res) => {
+  res.send("API mock rodando 🚀");
+});
 
-
-//executar servidor
+// -------------------
 app.listen(port, () => {
-  console.log(`Servidor rodando na porta ${port}`)
-})
+  console.log(`Servidor mock rodando na porta ${port}`);
+});
